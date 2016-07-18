@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -86,6 +88,40 @@ namespace KittyLikeability
             Assert.AreNotEqual(superKittyLikeability, simpleKittyLikeabilty);
         }
     }
+
+    [TestClass]
+    public class PerformanceTests
+    {
+        private const int RunCount = 5;
+
+        [TestMethod]
+        public void GetLikeability_DifferentProviders_NewHasBetterPerformance()
+        {
+            var firstProvider = new KittyLikeabilityCalculator();
+            var secondProvider = new QuickKittyLikeabilityProvider(new KittyLikeabilityCalculator());
+            var firstProviderExecutionTime = GetAverageExecutionTime(firstProvider.GetLikeability);
+            var secondProviderExecutionTime = GetAverageExecutionTime(secondProvider.GetLikeability);
+
+            Assert.IsTrue(firstProviderExecutionTime > secondProviderExecutionTime);
+        }
+
+        private static long GetAverageExecutionTime(Func<IKitty, double> func)
+        {
+            var superKitty = new SuperKitty(5, 3, KittyBreed.Bald, 2);
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            for (int i = 0; i < RunCount; i++)
+            {
+                func(superKitty);
+            }
+
+            stopwatch.Stop();
+            return stopwatch.ElapsedMilliseconds/RunCount;
+        }
+    }
+
 
     public enum KittyBreed
     {
