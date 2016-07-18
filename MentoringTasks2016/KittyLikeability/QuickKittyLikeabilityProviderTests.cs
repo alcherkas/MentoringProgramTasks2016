@@ -29,7 +29,7 @@ namespace KittyLikeability
         {
             // Arrange.
             var superKitty = new SuperKitty(4, 2, KittyBreed.Bald, 2);
-            var simpleKitty = new SimpleKitty(4, 2, KittyBreed.Bald, 2);
+            var simpleKitty = new SuperKitty(4, 2, KittyBreed.Bald, 2);
 
             // Act.
             var superKittyLikeability = _kittyLikeabilityProvider.GetLikeability(superKitty);
@@ -44,7 +44,7 @@ namespace KittyLikeability
         {
             // Arrange.
             var superKitty = new SuperKitty(5, 3, KittyBreed.Bald, 2);
-            var simpleKitty = new SimpleKitty(4, 2, KittyBreed.Bald, 2);
+            var simpleKitty = new SuperKitty(4, 2, KittyBreed.Bald, 2);
 
             // Act.
             var superKittyLikeability = _kittyLikeabilityProvider.GetLikeability(superKitty);
@@ -59,7 +59,7 @@ namespace KittyLikeability
         {
             // Arrange.
             var superKitty = new SuperKitty(4, 2, KittyBreed.Bald, 2);
-            var simpleKitty = new SimpleKitty(4, 2, KittyBreed.Bald, 2);
+            var simpleKitty = new SuperKitty(4, 2, KittyBreed.Bald, 2);
             var secondProvider = new QuickKittyLikeabilityProvider(new KittyLikeabilityCalculator());
 
             // Act.
@@ -75,7 +75,7 @@ namespace KittyLikeability
         {
             // Arrange.
             var superKitty = new SuperKitty(5, 3, KittyBreed.Bald, 2);
-            var simpleKitty = new SimpleKitty(4, 2, KittyBreed.Bald, 2);
+            var simpleKitty = new SuperKitty(4, 2, KittyBreed.Bald, 2);
             var secondProvider = new QuickKittyLikeabilityProvider(new KittyLikeabilityCalculator());
 
             // Act.
@@ -115,22 +115,39 @@ namespace KittyLikeability
         public int EarCount { get; }
         public KittyBreed Breed { get; }
         public int Weight { get; }
-    }
 
-    internal class SimpleKitty : IKitty
-    {
-        public SimpleKitty(int legCount, int earCount, KittyBreed breed, int weight)
+        public override int GetHashCode()
         {
-            LegCount = legCount;
-            EarCount = earCount;
-            Breed = breed;
-            Weight = weight;
+            return LegCount.GetHashCode() ^ EarCount.GetHashCode() ^ Weight.GetHashCode();
         }
 
-        public int LegCount { get; }
-        public int EarCount { get; }
-        public KittyBreed Breed { get; }
-        public int Weight { get; }
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+
+            var otherKitty = obj as SuperKitty;
+
+            if (otherKitty == null) return false;
+
+            
+
+            return this == otherKitty;
+        }
+
+        public static bool operator == (SuperKitty k1, SuperKitty k2)
+        {
+            if (ReferenceEquals(k1, null) || ReferenceEquals(k2, null)) return false;
+
+            var isEquals = k1.LegCount == k2.LegCount && k1.EarCount == k2.EarCount &&
+                           k1.Breed == k2.Breed && k1.Weight == k2.Weight;
+
+            return isEquals;
+        }
+
+        public static bool operator !=(SuperKitty k1, SuperKitty k2)
+        {
+            return !(k1 == k2);
+        }
     }
 
     public interface IKittyLikeabilityProvider
