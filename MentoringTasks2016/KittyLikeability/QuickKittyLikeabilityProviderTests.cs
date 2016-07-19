@@ -137,7 +137,7 @@ namespace KittyLikeability
         int Weight { get; }
     }
 
-    internal class SuperKitty : IKitty
+    internal class SuperKitty : IKitty, IEquatable<SuperKitty>
     {
         public SuperKitty(int legCount, int earCount, KittyBreed breed, int weight)
         {
@@ -157,17 +157,19 @@ namespace KittyLikeability
             return LegCount.GetHashCode() ^ EarCount.GetHashCode() ^ Weight.GetHashCode();
         }
 
+        public bool Equals(SuperKitty other)
+        {
+            if (other == null) return false;
+            
+            return this == other;
+        }
+
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            var other = obj as SuperKitty;
+            if (other == null) return false;
 
-            var otherKitty = obj as SuperKitty;
-
-            if (otherKitty == null) return false;
-
-            
-
-            return this == otherKitty;
+            return Equals(other);
         }
 
         public static bool operator == (SuperKitty k1, SuperKitty k2)
