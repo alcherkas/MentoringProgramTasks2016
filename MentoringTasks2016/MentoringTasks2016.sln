@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KittyLikeability", "KittyLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BCL1", "BCL1\BCL1.csproj", "{48F9B192-57A8-4B31-849B-446A66A0DEA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BCL2", "BCL2\BCL2.csproj", "{0915FF5B-965F-4CF7-9F2E-18412C6B108C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{48F9B192-57A8-4B31-849B-446A66A0DEA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48F9B192-57A8-4B31-849B-446A66A0DEA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48F9B192-57A8-4B31-849B-446A66A0DEA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0915FF5B-965F-4CF7-9F2E-18412C6B108C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0915FF5B-965F-4CF7-9F2E-18412C6B108C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0915FF5B-965F-4CF7-9F2E-18412C6B108C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0915FF5B-965F-4CF7-9F2E-18412C6B108C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
