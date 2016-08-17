@@ -8,6 +8,7 @@ namespace FileLoader
     {
         private static void DownloadFile(string[] args, bool async)
         {
+            bool downloadSuccessful = false;
             WebClient webClient = null;
             try
             {
@@ -16,6 +17,7 @@ namespace FileLoader
                     webClient.DownloadFileAsync(new Uri(args[0]), args[1]);
                 else
                     webClient.DownloadFile(new Uri(args[0]), args[1]);
+                downloadSuccessful = true;
             }
             catch (IndexOutOfRangeException)
             {
@@ -44,6 +46,10 @@ namespace FileLoader
                     DownloadFile(args, false);
                 }
             }
+            catch (WebException)
+            {
+                Console.WriteLine("Connection error");
+            }
             catch (ThreadAbortException)
             {
                 Console.WriteLine("Something went wrong during file download.");
@@ -61,7 +67,8 @@ namespace FileLoader
                 webClient?.Dispose();
             }
 
-            Console.WriteLine("Download completed successfully.");
+            if (downloadSuccessful)
+                Console.WriteLine("Download completed successfully.");
         }
 
         private static void Main(params string[] args)
