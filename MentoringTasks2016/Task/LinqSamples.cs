@@ -16,8 +16,8 @@ namespace SampleQueries
 {
     public interface ISamples
     {
-        List<Customer> GetCustomersWithOrderSumMoreThan(decimal totalOrderSum);
-
+        List<Customer> GetCustomersWithOrderSumMoreThan(decimal totalOrderSum = 500);
+        List<Customer> GetCustomersWithAnyOrderMoreThan(decimal orderTotal = 100);
     }
 
     [Title("LINQ Module")]
@@ -40,6 +40,11 @@ namespace SampleQueries
             return _dataSource.Customers
                         .Where(customer => customer.Orders.Sum(order => order.Total) > totalOrderSum)
                         .ToList();
+        }
+
+        public List<Customer> GetCustomersWithAnyOrderMoreThan(decimal orderTotal = 100)
+        {
+            return _dataSource.Customers;
         }
 
         [Category("Restriction Operators")]
