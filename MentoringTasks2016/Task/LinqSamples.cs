@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using SampleSupport;
 using Task.Data;
+using System.Collections.Generic;
 
 // Version Mad01
 
@@ -15,6 +16,8 @@ namespace SampleQueries
 {
     public interface ISamples
     {
+        List<Customer> GetCustomersWithOrderSumMoreThan(decimal totalOrderSum);
+
     }
 
     [Title("LINQ Module")]
@@ -27,6 +30,14 @@ namespace SampleQueries
         public LinqSamples(IDataSource dataSource)
         {
             _dataSource = dataSource;
+        }
+
+        [Category("Linq Demo")]
+        [Title("Where Orders Total Sum < x")]
+        [Description("")]
+        public List<Customer> GetCustomersWithOrderSumMoreThan(decimal totalOrderSum = 500)
+        {
+            return _dataSource.Customers;
         }
 
         [Category("Restriction Operators")]
