@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using SampleSupport;
 using SampleQueries;
 using System.IO;
+using Task.Data;
 
 // See the ReadMe.html for additional information
 namespace SampleQueries
@@ -22,10 +23,12 @@ namespace SampleQueries
         [STAThread]
         static void Main(string[] args)
         {
+            RegisterDependencies();
+
             List<SampleHarness> harnesses = new List<SampleHarness>();
 
+            LinqSamples linqHarness = Container.GetInstance<ISamples>() as LinqSamples;
 
-            LinqSamples linqHarness = new LinqSamples(null);
             harnesses.Add(linqHarness);
 
             Application.EnableVisualStyles();
@@ -34,6 +37,15 @@ namespace SampleQueries
             {
                 form.ShowDialog();
             }
+        }
+
+        private static LightInject.IServiceContainer Container { get; } = new LightInject.ServiceContainer();
+
+
+        private static void RegisterDependencies()
+        {
+            Container.Register<IDataSource, DataSource>();
+            Container.Register<ISamples, LinqSamples>();
         }
     }
 }
