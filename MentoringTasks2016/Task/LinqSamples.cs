@@ -44,7 +44,9 @@ namespace SampleQueries
 
         public List<Customer> GetCustomersWithAnyOrderMoreThan(decimal orderTotal = 100)
         {
-            return _dataSource.Customers;
+            return _dataSource.Customers
+                        .Where(customer=>customer.Orders.Any(order=> order.Total > orderTotal))
+                        .ToList();
         }
 
         [Category("Restriction Operators")]
