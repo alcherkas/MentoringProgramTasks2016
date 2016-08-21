@@ -25,7 +25,7 @@ namespace SampleQueries
             List<SampleHarness> harnesses = new List<SampleHarness>();
 
 
-            LinqSamples linqHarness = new LinqSamples();
+            LinqSamples linqHarness = new LinqSamples(null);
             harnesses.Add(linqHarness);
 
             Application.EnableVisualStyles();

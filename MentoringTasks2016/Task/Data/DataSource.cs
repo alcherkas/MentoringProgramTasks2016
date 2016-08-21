@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Task.Data
 {
-	public class DataSource
+    public interface IDataSource
+    {
+        List<Product> Products { get; }
+        List<Supplier> Suppliers { get; }
+        List<Customer> Customers { get; }
+    }
+
+	public class DataSource : IDataSource
 	{
 		private List<Product> productList;
 		private List<Customer> customerList;

@@ -13,12 +13,21 @@ using Task.Data;
 
 namespace SampleQueries
 {
+    public interface ISamples
+    {
+    }
+
     [Title("LINQ Module")]
     [Prefix("Linq")]
-    public class LinqSamples : SampleHarness
+    public class LinqSamples : SampleHarness, ISamples
     {
 
-        private DataSource dataSource = new DataSource();
+        private IDataSource _dataSource;
+
+        public LinqSamples(IDataSource dataSource)
+        {
+            _dataSource = dataSource;
+        }
 
         [Category("Restriction Operators")]
         [Title("Where - Task 1")]
@@ -46,7 +55,7 @@ namespace SampleQueries
         public void Linq2()
         {
             var products =
-                from p in dataSource.Products
+                from p in _dataSource.Products
                 where p.UnitsInStock > 0
                 select p;
 
