@@ -37,7 +37,9 @@ namespace SampleQueries
         [Description("")]
         public List<Customer> GetCustomersWithOrderSumMoreThan(decimal totalOrderSum = 500)
         {
-            return _dataSource.Customers;
+            return _dataSource.Customers
+                        .Where(customer => customer.Orders.Sum(order => order.Total) > totalOrderSum)
+                        .ToList();
         }
 
         [Category("Restriction Operators")]
