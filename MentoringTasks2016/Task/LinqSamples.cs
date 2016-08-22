@@ -98,7 +98,10 @@ namespace SampleQueries
                             Customer = c,
                             StartDateTime = c.Orders.OrderBy(o => o.OrderDate).First().OrderDate
                         });
-            return customersWithOrderDate.OrderBy(x => x.StartDateTime).ToList();
+            return customersWithOrderDate.OrderBy(x => x.StartDateTime)
+                    .ThenByDescending(x => x.Customer.Orders.Count())
+                    .ThenBy(x => x.Customer.CompanyName)
+                    .ToList();
         }
     }
 }
