@@ -53,6 +53,78 @@ namespace Task.UnitTests
             Assert.True(customers.SequenceEqual(expectedCustomersOrder));
         }
 
+        [Fact]
+        public void GetProductCategories_ProductGroupedByCategory()
+        {
+            // Arrange.
+            var source = DataSourceFactory.Create();
+            var samples = new LinqSamples(source);
+
+            // Act.
+            var groupedProducts = samples.GetProductCategories();
+            var expectedGrouping = GetExpectedGroup(source);
+
+            // Assert.
+            Assert.True(groupedProducts.SequenceEqual(expectedGrouping));
+        }
+
+        [Fact]
+        public void GetProductCategories_CategoryGroupedByUnitsInStock()
+        {
+            // Arrange.
+            var source = DataSourceFactory.Create();
+            var samples = new LinqSamples(source);
+
+            // Act.
+            var groupedProducts = samples.GetProductCategories();
+            var category = groupedProducts.First();
+
+            var expectedGrouping = GetExpectedGroup(source);
+            var expectedCategory = expectedGrouping.First();
+
+            // Assert.
+            Assert.True(category.Entities.SequenceEqual(expectedCategory.Entities));
+        }
+
+        [Fact]
+        public void GetProductCategories_LastOrderedByPrice()
+        {
+            // Arrange.
+            var source = DataSourceFactory.Create();
+            var samples = new LinqSamples(source);
+
+            // Act.
+            var groupedProducts = samples.GetProductCategories();
+            var category = groupedProducts.Last().Entities.Last().Entities;
+
+            var expectedGrouping = GetExpectedGroup(source);
+            var expectedCategory = expectedGrouping.Last();
+
+            var orderedExpectedCategory = expectedCategory.Entities.Last().Entities.OrderBy(xx => xx.UnitPrice);
+
+            // Assert.
+            Assert.True(category.SequenceEqual(orderedExpectedCategory));
+        }
+
+        private static IEnumerable<ProductCategoryGroup> GetExpectedGroup(IDataSource source)
+        {
+            var expectedGrouping = source.Products
+                .GroupBy(x => x.Category)
+                .Select(
+                    x => new ProductCategoryGroup
+                    {
+                        Key = x.Key,
+                        Entities = x.GroupBy(xx => xx.UnitsInStock)
+                                        .Select(xx => new ProductUnitGroup
+                                        {
+                                            Key = xx.Key,
+                                            Entities = xx
+                                        })
+                    });
+
+            return expectedGrouping;
+        }
+
         private static class DataSourceFactory
         {
             public static IDataSource Create() => new DataSource();

@@ -18,8 +18,8 @@ namespace SampleQueries
     {
         List<Customer> GetCustomersWithOrderSumMoreThan(decimal totalOrderSum = 500);
         List<Customer> GetCustomersWithAnyOrderMoreThan(decimal orderTotal = 100);
-
         List<CustomerStatistic> GetGustomersStartDate();
+        IEnumerable<ProductCategoryGroup> GetProductCategories();
     }
 
     [Title("LINQ Module")]
@@ -68,6 +68,11 @@ namespace SampleQueries
             {
                 Console.WriteLine(x);
             }
+        }
+
+        public IEnumerable<ProductCategoryGroup> GetProductCategories()
+        {
+            throw new NotImplementedException();
         }
 
         [Category("Restriction Operators")]
