@@ -69,9 +69,9 @@ namespace Task.UnitTests
                 {
                     var customers = new List<Customer>(5)
                     {
-                        new Customer() { Orders = new[] { new Order { Total = 10 }, new Order { Total = 10 }, new Order { Total = 10 } } },
-                        new Customer() { Orders = new[] { new Order { Total = 500 }, new Order { Total = 10 }, new Order { Total = 10 } } },
-                        new Customer() { Orders = new[] { new Order { Total = 10 }, new Order { Total = 10 }, new Order { Total = 10 } } },
+                        new Customer() { Orders = new[] { new Order { Total = 10, OrderDate = new DateTime(2015, 10, 11) }, new Order { Total = 10 }, new Order { Total = 10 } } },
+                        new Customer() { Orders = new[] { new Order { Total = 500, OrderDate = new DateTime(2016, 10, 11) }, new Order { Total = 10 }, new Order { Total = 10 } } },
+                        new Customer() { Orders = new[] { new Order { Total = 10, OrderDate = new DateTime(2013, 10, 11) }, new Order { Total = 10 }, new Order { Total = 10 } } },
                         new Customer() { Orders = new[] { new Order { Total = 10 }, new Order { Total = 10 }, new Order { Total = 10 } } },
                         new Customer() { Orders = new[] { new Order { Total = 10 }, new Order { Total = 10 }, new Order { Total = 10 } } }
                     };

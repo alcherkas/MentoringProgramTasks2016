@@ -89,7 +89,16 @@ namespace SampleQueries
 
         public List<CustomerStatistic> GetGustomersStartDate()
         {
-            throw new NotImplementedException();
+            var customersWithOrders = _dataSource.Customers.Where(c => c.Orders.Any());
+            var customersWithOrderDate =
+                customersWithOrders.Select(
+                    c =>
+                        new CustomerStatistic
+                        {
+                            Customer = c,
+                            StartDateTime = c.Orders.OrderBy(o => o.OrderDate).First().OrderDate
+                        });
+            return customersWithOrderDate.OrderBy(x => x.StartDateTime).ToList();
         }
     }
 }
