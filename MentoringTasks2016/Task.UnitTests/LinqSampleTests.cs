@@ -33,6 +33,20 @@ namespace Task.UnitTests
             Assert.True(result.All(x => x.Orders.Any(xx => xx.Total > moreThanValue)));
         }
 
+        [Fact]
+        public void GetGustomersStartDate_CustomersWithOrderedDate()
+        {
+            // Arrange
+            var source = DataSourceFactory.Create();
+            var samples = new LinqSamples(source);
+
+            // Act
+            var customers = samples.GetGustomersStartDate();
+
+            var expectedCustomersOrder = customers.OrderBy(x => x.StartDateTime).ToList();
+            Assert.True(customers.SequenceEqual(expectedCustomersOrder));
+        }
+
         private static class DataSourceFactory
         {
             public static IDataSource Create() => new DataSource();

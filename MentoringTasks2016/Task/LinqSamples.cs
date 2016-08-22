@@ -18,6 +18,8 @@ namespace SampleQueries
     {
         List<Customer> GetCustomersWithOrderSumMoreThan(decimal totalOrderSum = 500);
         List<Customer> GetCustomersWithAnyOrderMoreThan(decimal orderTotal = 100);
+
+        List<CustomerStatistic> GetGustomersStartDate();
     }
 
     [Title("LINQ Module")]
@@ -85,5 +87,9 @@ namespace SampleQueries
             }
         }
 
+        public List<CustomerStatistic> GetGustomersStartDate()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
