@@ -43,7 +43,11 @@ namespace Task.UnitTests
             // Act
             var customers = samples.GetGustomersStartDate();
 
-            var expectedCustomersOrder = customers.OrderBy(x => x.StartDateTime).ToList();
+            var expectedCustomersOrder =
+                customers.OrderBy(x => x.StartDateTime)
+                    .ThenByDescending(x => x.Customer.Orders.Count())
+                    .OrderBy(s => s.Customer.CompanyName)
+                    .ToList();
             Assert.True(customers.SequenceEqual(expectedCustomersOrder));
         }
 
@@ -69,10 +73,10 @@ namespace Task.UnitTests
                 {
                     var customers = new List<Customer>(5)
                     {
-                        new Customer() { Orders = new[] { new Order { Total = 10, OrderDate = new DateTime(2015, 10, 11) }, new Order { Total = 10 }, new Order { Total = 10 } } },
+                        new Customer() { CompanyName = "BBC", Orders = new[] { new Order { Total = 10, OrderDate = new DateTime(2015, 10, 11) }, new Order { Total = 10 }, new Order { Total = 10 } } },
                         new Customer() { Orders = new[] { new Order { Total = 500, OrderDate = new DateTime(2016, 10, 11) }, new Order { Total = 10 }, new Order { Total = 10 } } },
                         new Customer() { Orders = new[] { new Order { Total = 10, OrderDate = new DateTime(2013, 10, 11) }, new Order { Total = 10 }, new Order { Total = 10 } } },
-                        new Customer() { Orders = new[] { new Order { Total = 10 }, new Order { Total = 10 }, new Order { Total = 10 } } },
+                        new Customer() { CompanyName = "ABC", Orders = new[] { new Order { Total = 10, OrderDate = new DateTime(2015, 10, 11) }, new Order { Total = 10 }, new Order { Total = 10 } } },
                         new Customer() { Orders = new[] { new Order { Total = 10 }, new Order { Total = 10 }, new Order { Total = 10 } } }
                     };
 
