@@ -36,11 +36,11 @@ namespace Task.UnitTests
         [Fact]
         public void GetGustomersStartDate_CustomersWithOrderedDate()
         {
-            // Arrange
+            // Arrange.
             var source = DataSourceFactory.Create();
             var samples = new LinqSamples(source);
 
-            // Act
+            // Act.
             var customers = samples.GetGustomersStartDate();
 
             var expectedCustomersOrder =
@@ -48,6 +48,8 @@ namespace Task.UnitTests
                     .ThenByDescending(x => x.Customer.Orders.Count())
                     .OrderBy(s => s.Customer.CompanyName)
                     .ToList();
+
+            // Assert.
             Assert.True(customers.SequenceEqual(expectedCustomersOrder));
         }
 
@@ -58,6 +60,7 @@ namespace Task.UnitTests
             private class DataSource : IDataSource
             {
                 private List<Customer> _customers;
+                private List<Product> _products;
 
                 public DataSource()
                 {
@@ -67,6 +70,21 @@ namespace Task.UnitTests
                 private void Initialize()
                 {
                     _customers = GetCustomers();
+                    _products = GetProducts();
+                }
+
+                private List<Product> GetProducts()
+                {
+                    var products = new List<Product>(5)
+                    {
+                        new Product { Category = ProductCategories.Food, UnitsInStock = 10, UnitPrice = 10 },
+                        new Product { Category = ProductCategories.Furniture, UnitsInStock = 1000, UnitPrice = 5 },
+                        new Product { Category = ProductCategories.Phone, UnitsInStock = 300, UnitPrice = 30 },
+                        new Product { Category = ProductCategories.Furniture, UnitsInStock = 500, UnitPrice = 13 },
+                        new Product { Category = ProductCategories.Food, UnitsInStock = 7, UnitPrice = 18 }
+                    };
+
+                    return products;
                 }
 
                 private static List<Customer> GetCustomers()
@@ -99,6 +117,13 @@ namespace Task.UnitTests
                     {
                         throw new NotImplementedException();
                     }
+                }
+
+                private static class ProductCategories
+                {
+                    public const string Furniture = "Furniture";
+                    public const string Phone = "Phone";
+                    public const string Food = "Food";
                 }
             }
         }
