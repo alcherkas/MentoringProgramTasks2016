@@ -131,12 +131,12 @@ namespace SampleQueries
 
         public List<AverageProfitability> GetAverageProfitability()
         {
-            return new List<AverageProfitability>();
+            return _dataSource.Customers.GroupBy(x => x.City).Select(x => new AverageProfitability(x.Key, x.Average(xx => xx.Orders.Sum(xxx => xxx.Total)))).ToList();
         }
 
         public List<AverageIntensity> GetAverageIntensity()
         {
-            return new List<AverageIntensity>();
+            return _dataSource.Customers.GroupBy(x => x.City).Select(x => new AverageIntensity(x.Key, x.Average(xx => xx.Orders.Count()))).ToList();
         }
     }
 }
