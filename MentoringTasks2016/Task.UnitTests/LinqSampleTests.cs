@@ -61,8 +61,8 @@ namespace Task.UnitTests
             var samples = new LinqSamples(source);
 
             // Act.
-            var groupedProducts = samples.GetProductCategories();
-            var expectedGrouping = GetExpectedGroup(source);
+            var groupedProducts = samples.GetProductCategories().Select(x => x.Key).ToList();
+            var expectedGrouping = GetExpectedGroup(source).Select(x => x.Key).ToList();
 
             // Assert.
             Assert.True(groupedProducts.SequenceEqual(expectedGrouping));
@@ -77,13 +77,13 @@ namespace Task.UnitTests
 
             // Act.
             var groupedProducts = samples.GetProductCategories();
-            var category = groupedProducts.First();
+            var category = groupedProducts.First().Entities.Select(x => x.Key).ToList();
 
             var expectedGrouping = GetExpectedGroup(source);
-            var expectedCategory = expectedGrouping.First();
+            var expectedCategory = expectedGrouping.First().Entities.Select(x => x.Key).ToList();
 
             // Assert.
-            Assert.True(category.Entities.SequenceEqual(expectedCategory.Entities));
+            Assert.True(category.SequenceEqual(expectedCategory));
         }
 
         [Fact]
@@ -118,11 +118,17 @@ namespace Task.UnitTests
                                         .Select(xx => new ProductUnitGroup
                                         {
                                             Key = xx.Key,
-                                            Entities = xx
-                                        })
+                                            Entities = xx.ToList()
+                                        }).ToList()
                     });
 
-            return expectedGrouping;
+            foreach(var item in expectedGrouping)
+            {
+                var lastGroup = item.Entities.Last();
+                lastGroup.Entities = lastGroup.Entities.OrderBy(x => x.UnitPrice).ToList();
+            }
+
+            return expectedGrouping.ToList();
         }
 
         private static class DataSourceFactory
@@ -175,13 +181,7 @@ namespace Task.UnitTests
 
                 public List<Customer> Customers => _customers;
 
-                public List<Product> Products
-                {
-                    get
-                    {
-                        throw new NotImplementedException();
-                    }
-                }
+                public List<Product> Products => _products;
 
                 public List<Supplier> Suppliers
                 {
