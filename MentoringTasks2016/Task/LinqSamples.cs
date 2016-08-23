@@ -26,7 +26,6 @@ namespace SampleQueries
     [Prefix("Linq")]
     public class LinqSamples : SampleHarness, ISamples
     {
-
         private IDataSource _dataSource;
 
         public LinqSamples(IDataSource dataSource)
@@ -72,7 +71,28 @@ namespace SampleQueries
 
         public IEnumerable<ProductCategoryGroup> GetProductCategories()
         {
-            throw new NotImplementedException();
+            var groupedProducts = _dataSource.Products
+                .GroupBy(p => p.Category)
+                .Select(gp => new ProductCategoryGroup
+                              {
+                                  Key = gp.Key,
+                                  Entities = gp.GroupBy(p => p.UnitsInStock)
+                                               .Select(x => new ProductUnitGroup
+                                                            {
+                                                                Key = x.Key,
+                                                                Entities = x.ToList()
+                                                            })
+                                               .ToList()
+                              })
+                .ToList();
+
+            foreach(var item in groupedProducts)
+            {
+                var lastProductGroup = item.Entities.Last();
+                lastProductGroup.Entities = lastProductGroup.Entities.OrderBy(x => x.UnitPrice).ToList();
+            }
+
+            return groupedProducts;
         }
 
         [Category("Restriction Operators")]
