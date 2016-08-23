@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\AverageIntensity.cs" />
+    <Compile Include="Data\AverageProfitability.cs" />
     <Compile Include="Data\Customer.cs" />
     <Compile Include="Data\CustomerStatistic.cs" />
     <Compile Include="Data\DataSource.cs" />

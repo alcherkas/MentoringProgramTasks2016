@@ -106,6 +106,70 @@ namespace Task.UnitTests
             Assert.True(category.SequenceEqual(orderedExpectedCategory));
         }
 
+        [Fact]
+        public void GetAverageProfitability_GroupedByCity()
+        {
+            // Arrange.
+            var source = DataSourceFactory.Create();
+            var samples = new LinqSamples(source);
+
+            // Act.
+            var averageProfitability = samples.GetAverageProfitability().Select(x=>x.City).ToList();
+            var expectedGrouping = source.Customers.GroupBy(x => x.City).Select(x => x.Key).ToList();
+
+            //Assert.
+            Assert.True(averageProfitability.SequenceEqual(expectedGrouping));
+        }
+
+        [Fact]
+        public void GetAverageProfitability_HasCorrectAverageValue()
+        {
+            // Arrange.
+            var source = DataSourceFactory.Create();
+            var samples = new LinqSamples(source);
+
+            // Act.
+            var averageProfitability = samples.GetAverageProfitability().Select(x => x.Value).ToList();
+            var expectedGrouping = source.Customers.GroupBy(x => x.City)
+                                            .Select(x => x.Average(xx => xx.Orders.Sum(xxx => xxx.Total)))
+                                            .ToList();
+
+            //Assert.
+            Assert.True(averageProfitability.SequenceEqual(expectedGrouping));
+        }
+
+        [Fact]
+        public void GetAverageIntensity_GroupedByCity()
+        {
+            // Arrange.
+            var source = DataSourceFactory.Create();
+            var samples = new LinqSamples(source);
+
+            // Act.
+            var averageIntensity = samples.GetAverageIntensity().Select(x => x.City).ToList();
+            var expectedGrouping = source.Customers.GroupBy(x => x.City).Select(x => x.Key).ToList();
+
+            //Assert.
+            Assert.True(averageIntensity.SequenceEqual(expectedGrouping));
+        }
+
+        [Fact]
+        public void GetAverageIntensity_HasCorrectIntensityValue()
+        {
+            // Arrange.
+            var source = DataSourceFactory.Create();
+            var samples = new LinqSamples(source);
+
+            // Act.
+            var averageIntensity = samples.GetAverageIntensity().Select(x => x.Value).ToList();
+            var expectedGrouping = source.Customers.GroupBy(x => x.City)
+                                            .Select(x => x.Average(xx => xx.Orders.Count()))
+                                            .ToList();
+
+            //Assert.
+            Assert.True(averageIntensity.SequenceEqual(expectedGrouping));
+        }
+
         private static IEnumerable<ProductCategoryGroup> GetExpectedGroup(IDataSource source)
         {
             var expectedGrouping = source.Products

@@ -128,5 +128,15 @@ namespace SampleQueries
                     .ThenBy(x => x.Customer.CompanyName)
                     .ToList();
         }
+
+        public List<AverageProfitability> GetAverageProfitability()
+        {
+            return new List<AverageProfitability>();
+        }
+
+        public List<AverageIntensity> GetAverageIntensity()
+        {
+            return new List<AverageIntensity>();
+        }
     }
 }
