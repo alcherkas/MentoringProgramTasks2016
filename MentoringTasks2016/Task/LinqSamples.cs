@@ -9,6 +9,7 @@ using System.Linq;
 using SampleSupport;
 using Task.Data;
 using System.Collections.Generic;
+using Task.Data.ReadModels;
 
 // Version Mad01
 
@@ -20,6 +21,8 @@ namespace SampleQueries
         List<Customer> GetCustomersWithAnyOrderMoreThan();
         List<CustomerStatistic> GetGustomersStartDate();
         IEnumerable<ProductCategoryGroup> GetProductCategories();
+        List<AverageProfitability> GetAverageProfitability();
+        List<AverageIntensity> GetAverageIntensity();
     }
 
     [Title("LINQ Module")]
@@ -82,9 +85,9 @@ namespace SampleQueries
 
 
 
-            var orderedCustomers = customersWithOrderDate.OrderBy(x => x.StartDateTime)
-                    .ThenByDescending(x => x.Customer.Orders.Count())
-                    .ThenBy(x => x.Customer.CompanyName)
+            var orderedCustomers = customersWithOrderDate.OrderBy(cs => cs.StartDateTime)
+                    .ThenByDescending(cs => cs.Customer.Orders.Count())
+                    .ThenBy(cs => cs.Customer.CompanyName)
                     .ToList();
 
             foreach (var customerInfo in orderedCustomers)
@@ -107,10 +110,10 @@ namespace SampleQueries
                               {
                                   Key = gp.Key,
                                   Entities = gp.GroupBy(p => p.UnitsInStock)
-                                               .Select(x => new ProductUnitGroup
+                                               .Select(productsGroup => new ProductUnitGroup
                                                             {
-                                                                Key = x.Key,
-                                                                Entities = x.ToList()
+                                                                Key = productsGroup.Key,
+                                                                Entities = productsGroup.ToList()
                                                             })
                                                .ToList()
                               })
@@ -119,7 +122,7 @@ namespace SampleQueries
             foreach(var item in groupedProducts)
             {
                 var lastProductGroup = item.Entities.Last();
-                lastProductGroup.Entities = lastProductGroup.Entities.OrderBy(x => x.UnitPrice).ToList();
+                lastProductGroup.Entities = lastProductGroup.Entities.OrderBy(p => p.UnitPrice).ToList();
             }
 
             foreach(var categoryGroup in groupedProducts)
@@ -142,7 +145,14 @@ namespace SampleQueries
         [Description("Calculates average profitability foreach city.")]
         public List<AverageProfitability> GetAverageProfitability()
         {
-            var profitabilities = _dataSource.Customers.GroupBy(x => x.City).Select(x => new AverageProfitability(x.Key, x.Average(xx => xx.Orders.Sum(xxx => xxx.Total)))).ToList();
+            var profitabilities = _dataSource.Customers
+                                    .GroupBy(c => c.City)
+                                    .Select(gc => new AverageProfitability
+                                                  {
+                                                      City = gc.Key,
+                                                      Value = gc.Average(customer => customer.Orders.Sum(order => order.Total))
+                                                  })
+                                    .ToList();
 
             foreach (var profitability in profitabilities) ObjectDumper.Write(profitability);
 
@@ -154,7 +164,14 @@ namespace SampleQueries
         [Description("Calculates average intensity foreach city.")]
         public List<AverageIntensity> GetAverageIntensity()
         {
-            var intensities = _dataSource.Customers.GroupBy(x => x.City).Select(x => new AverageIntensity(x.Key, x.Average(xx => xx.Orders.Count()))).ToList();
+            var intensities = _dataSource.Customers
+                                    .GroupBy(customer => customer.City)
+                                    .Select(customersGroup => new AverageIntensity
+                                                              {
+                                                                  City = customersGroup.Key,
+                                                                  Value = customersGroup.Average(customer => customer.Orders.Count())
+                                                              })
+                                    .ToList();
 
             foreach (var intensity in intensities) ObjectDumper.Write(intensity);
 

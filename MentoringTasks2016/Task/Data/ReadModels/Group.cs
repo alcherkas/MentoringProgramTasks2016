@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Task.Data
+namespace Task.Data.ReadModels
 {
     public class Group<TKey, TEntity>
     {

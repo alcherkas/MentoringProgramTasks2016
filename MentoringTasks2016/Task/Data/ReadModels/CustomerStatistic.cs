@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Task.Data
+namespace Task.Data.ReadModels
 {
     public class CustomerStatistic
     {

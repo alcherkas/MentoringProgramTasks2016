@@ -4,6 +4,7 @@ using SampleQueries;
 using Task.Data;
 using Xunit;
 using System.Linq;
+using Task.Data.ReadModels;
 
 namespace Task.UnitTests
 {
@@ -18,7 +19,7 @@ namespace Task.UnitTests
 
             var result = samples.GetCustomersWithOrderSumMoreThan();
 
-            Assert.True(result.All(x => x.Orders.Sum(xx => xx.Total) > moreThanValue));
+            Assert.True(result.All(customer => customer.Orders.Sum(order => order.Total) > moreThanValue));
         }
 
         [Fact]
@@ -30,7 +31,7 @@ namespace Task.UnitTests
 
             var result = samples.GetCustomersWithAnyOrderMoreThan();
 
-            Assert.True(result.All(x => x.Orders.Any(xx => xx.Total > moreThanValue)));
+            Assert.True(result.All(customer => customer.Orders.Any(order => order.Total > moreThanValue)));
         }
 
         [Fact]
@@ -44,9 +45,9 @@ namespace Task.UnitTests
             var customers = samples.GetGustomersStartDate();
 
             var expectedCustomersOrder =
-                customers.OrderBy(x => x.StartDateTime)
-                    .ThenByDescending(x => x.Customer.Orders.Count())
-                    .OrderBy(s => s.Customer.CompanyName)
+                customers.OrderBy(cs => cs.StartDateTime)
+                    .ThenByDescending(cs => cs.Customer.Orders.Count())
+                    .OrderBy(cs => cs.Customer.CompanyName)
                     .ToList();
 
             // Assert.
@@ -61,8 +62,8 @@ namespace Task.UnitTests
             var samples = new LinqSamples(source);
 
             // Act.
-            var groupedProducts = samples.GetProductCategories().Select(x => x.Key).ToList();
-            var expectedGrouping = GetExpectedGroup(source).Select(x => x.Key).ToList();
+            var groupedProducts = samples.GetProductCategories().Select(categoryGroup => categoryGroup.Key).ToList();
+            var expectedGrouping = GetExpectedGroup(source).Select(categoryGroup => categoryGroup.Key).ToList();
 
             // Assert.
             Assert.True(groupedProducts.SequenceEqual(expectedGrouping));
@@ -77,10 +78,10 @@ namespace Task.UnitTests
 
             // Act.
             var groupedProducts = samples.GetProductCategories();
-            var category = groupedProducts.First().Entities.Select(x => x.Key).ToList();
+            var category = groupedProducts.First().Entities.Select(unitGroup => unitGroup.Key).ToList();
 
             var expectedGrouping = GetExpectedGroup(source);
-            var expectedCategory = expectedGrouping.First().Entities.Select(x => x.Key).ToList();
+            var expectedCategory = expectedGrouping.First().Entities.Select(unitGroup => unitGroup.Key).ToList();
 
             // Assert.
             Assert.True(category.SequenceEqual(expectedCategory));
@@ -100,7 +101,7 @@ namespace Task.UnitTests
             var expectedGrouping = GetExpectedGroup(source);
             var expectedCategory = expectedGrouping.Last();
 
-            var orderedExpectedCategory = expectedCategory.Entities.Last().Entities.OrderBy(xx => xx.UnitPrice);
+            var orderedExpectedCategory = expectedCategory.Entities.Last().Entities.OrderBy(product => product.UnitPrice);
 
             // Assert.
             Assert.True(category.SequenceEqual(orderedExpectedCategory));
@@ -114,8 +115,14 @@ namespace Task.UnitTests
             var samples = new LinqSamples(source);
 
             // Act.
-            var averageProfitability = samples.GetAverageProfitability().Select(x=>x.City).ToList();
-            var expectedGrouping = source.Customers.GroupBy(x => x.City).Select(x => x.Key).ToList();
+            var averageProfitability = samples.GetAverageProfitability()
+                                            .Select(ap=>ap.City)
+                                            .ToList();
+
+            var expectedGrouping = source.Customers
+                                    .GroupBy(customer => customer.City)
+                                    .Select(customerGroup => customerGroup.Key)
+                                    .ToList();
 
             //Assert.
             Assert.True(averageProfitability.SequenceEqual(expectedGrouping));
@@ -129,9 +136,13 @@ namespace Task.UnitTests
             var samples = new LinqSamples(source);
 
             // Act.
-            var averageProfitability = samples.GetAverageProfitability().Select(x => x.Value).ToList();
-            var expectedGrouping = source.Customers.GroupBy(x => x.City)
-                                            .Select(x => x.Average(xx => xx.Orders.Sum(xxx => xxx.Total)))
+            var averageProfitability = samples.GetAverageProfitability()
+                                            .Select(ap => ap.Value)
+                                            .ToList();
+
+            var expectedGrouping = source.Customers.GroupBy(customer => customer.City)
+                                            .Select(customerGroup => 
+                                                customerGroup.Average(customer => customer.Orders.Sum(order => order.Total)))
                                             .ToList();
 
             //Assert.
@@ -146,8 +157,14 @@ namespace Task.UnitTests
             var samples = new LinqSamples(source);
 
             // Act.
-            var averageIntensity = samples.GetAverageIntensity().Select(x => x.City).ToList();
-            var expectedGrouping = source.Customers.GroupBy(x => x.City).Select(x => x.Key).ToList();
+            var averageIntensity = samples.GetAverageIntensity()
+                                        .Select(ai => ai.City)
+                                        .ToList();
+
+            var expectedGrouping = source.Customers
+                                       .GroupBy(customer => customer.City)
+                                       .Select(customerGroup => customerGroup.Key)
+                                       .ToList();
 
             //Assert.
             Assert.True(averageIntensity.SequenceEqual(expectedGrouping));
@@ -161,7 +178,10 @@ namespace Task.UnitTests
             var samples = new LinqSamples(source);
 
             // Act.
-            var averageIntensity = samples.GetAverageIntensity().Select(x => x.Value).ToList();
+            var averageIntensity = samples.GetAverageIntensity()
+                                        .Select(x => x.Value)
+                                        .ToList();
+
             var expectedGrouping = source.Customers.GroupBy(x => x.City)
                                             .Select(x => x.Average(xx => xx.Orders.Count()))
                                             .ToList();
@@ -173,23 +193,23 @@ namespace Task.UnitTests
         private static IEnumerable<ProductCategoryGroup> GetExpectedGroup(IDataSource source)
         {
             var expectedGrouping = source.Products
-                .GroupBy(x => x.Category)
+                .GroupBy(product => product.Category)
                 .Select(
-                    x => new ProductCategoryGroup
+                    categoryGroup => new ProductCategoryGroup
                     {
-                        Key = x.Key,
-                        Entities = x.GroupBy(xx => xx.UnitsInStock)
-                                        .Select(xx => new ProductUnitGroup
+                        Key = categoryGroup.Key,
+                        Entities = categoryGroup.GroupBy(product => product.UnitsInStock)
+                                        .Select(unitGroup => new ProductUnitGroup
                                         {
-                                            Key = xx.Key,
-                                            Entities = xx.ToList()
+                                            Key = unitGroup.Key,
+                                            Entities = unitGroup.ToList()
                                         }).ToList()
                     });
 
             foreach(var item in expectedGrouping)
             {
                 var lastGroup = item.Entities.Last();
-                lastGroup.Entities = lastGroup.Entities.OrderBy(x => x.UnitPrice).ToList();
+                lastGroup.Entities = lastGroup.Entities.OrderBy(product => product.UnitPrice).ToList();
             }
 
             return expectedGrouping.ToList();
