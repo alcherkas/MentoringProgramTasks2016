@@ -16,59 +16,89 @@ namespace SampleQueries
 {
     public interface ISamples
     {
-        List<Customer> GetCustomersWithOrderSumMoreThan(decimal totalOrderSum = 500);
-        List<Customer> GetCustomersWithAnyOrderMoreThan(decimal orderTotal = 100);
+        List<Customer> GetCustomersWithOrderSumMoreThan();
+        List<Customer> GetCustomersWithAnyOrderMoreThan();
         List<CustomerStatistic> GetGustomersStartDate();
         IEnumerable<ProductCategoryGroup> GetProductCategories();
     }
 
     [Title("LINQ Module")]
-    [Prefix("Linq")]
+    [Prefix("Get")]
     public class LinqSamples : SampleHarness, ISamples
     {
         private IDataSource _dataSource;
+
+        private const string CategoryName = "LINQ";
 
         public LinqSamples(IDataSource dataSource)
         {
             _dataSource = dataSource;
         }
 
-        [Category("Linq Demo")]
-        [Title("Where Orders Total Sum < x")]
-        [Description("")]
-        public List<Customer> GetCustomersWithOrderSumMoreThan(decimal totalOrderSum = 500)
+        [Category(CategoryName)]
+        [Title("Task 1")]
+        [Description("Selects customers with total orders sum greater than 500")]
+        public List<Customer> GetCustomersWithOrderSumMoreThan()
         {
-            return _dataSource.Customers
-                        .Where(customer => customer.Orders.Sum(order => order.Total) > totalOrderSum)
-                        .ToList();
+            decimal totalOrderSum = 500;
+            var customers = _dataSource.Customers
+                                .Where(customer => customer.Orders.Sum(order => order.Total) > totalOrderSum)
+                                .ToList();
+
+            foreach(var customer in customers)
+                ObjectDumper.Write(customer);
+
+            return customers;
         }
 
-        public List<Customer> GetCustomersWithAnyOrderMoreThan(decimal orderTotal = 100)
+        [Category(CategoryName)]
+        [Title("Task 3")]
+        [Description("Selects customer with any order with total value greater than 100")]
+        public List<Customer> GetCustomersWithAnyOrderMoreThan()
         {
-            return _dataSource.Customers
-                        .Where(customer=>customer.Orders.Any(order=> order.Total > orderTotal))
-                        .ToList();
+            decimal orderTotal = 100;
+            var customers = _dataSource.Customers
+                                .Where(customer=>customer.Orders.Any(order=> order.Total > orderTotal))
+                                .ToList();
+
+            foreach (var customer in customers) ObjectDumper.Write(customer);
+
+            return customers;
         }
 
-        [Category("Restriction Operators")]
-        [Title("Where - Task 1")]
-        [Description("This sample uses the where clause to find all elements of an array with a value less than 5.")]
-        public void Linq1()
+        [Category(CategoryName)]
+        [Title("Task 5")]
+        [Description("Returns clients with first order date.")]
+        public List<CustomerStatistic> GetGustomersStartDate()
         {
-            int[] numbers = { 5, 4, 1, 3, 9, 8, 6, 7, 2, 0 };
+            var customersWithOrders = _dataSource.Customers.Where(c => c.Orders.Any());
+            var customersWithOrderDate = customersWithOrders.Select(
+                    c =>
+                        new CustomerStatistic
+                        {
+                            Customer = c,
+                            StartDateTime = c.Orders.OrderBy(o => o.OrderDate).First().OrderDate
+                        });
 
-            var lowNums =
-                from num in numbers
-                where num < 5
-                select num;
 
-            Console.WriteLine("Numbers < 5:");
-            foreach (var x in lowNums)
+
+            var orderedCustomers = customersWithOrderDate.OrderBy(x => x.StartDateTime)
+                    .ThenByDescending(x => x.Customer.Orders.Count())
+                    .ThenBy(x => x.Customer.CompanyName)
+                    .ToList();
+
+            foreach (var customerInfo in orderedCustomers)
             {
-                Console.WriteLine(x);
+                ObjectDumper.Write(customerInfo.Customer);
+                ObjectDumper.Write(customerInfo.StartDateTime);
             }
+
+            return orderedCustomers;
         }
 
+        [Category(CategoryName)]
+        [Title("Task 7")]
+        [Description("Selects products grouped by category. In category grouped by units in stock. And for the last group products should be ordered by price.")]
         public IEnumerable<ProductCategoryGroup> GetProductCategories()
         {
             var groupedProducts = _dataSource.Products
@@ -92,51 +122,43 @@ namespace SampleQueries
                 lastProductGroup.Entities = lastProductGroup.Entities.OrderBy(x => x.UnitPrice).ToList();
             }
 
+            foreach(var categoryGroup in groupedProducts)
+            {
+                Console.WriteLine(categoryGroup.Key);
+                foreach(var unitGroup in categoryGroup.Entities)
+                {
+                    Console.WriteLine(unitGroup.Key);
+                    foreach (var product in unitGroup.Entities) ObjectDumper.Write(product);
+                    Console.WriteLine();
+                }
+                Console.WriteLine();
+            }
+
             return groupedProducts;
         }
 
-        [Category("Restriction Operators")]
-        [Title("Where - Task 2")]
-        [Description("This sample return return all presented in market products")]
-
-        public void Linq2()
-        {
-            var products =
-                from p in _dataSource.Products
-                where p.UnitsInStock > 0
-                select p;
-
-            foreach (var p in products)
-            {
-                ObjectDumper.Write(p);
-            }
-        }
-
-        public List<CustomerStatistic> GetGustomersStartDate()
-        {
-            var customersWithOrders = _dataSource.Customers.Where(c => c.Orders.Any());
-            var customersWithOrderDate =
-                customersWithOrders.Select(
-                    c =>
-                        new CustomerStatistic
-                        {
-                            Customer = c,
-                            StartDateTime = c.Orders.OrderBy(o => o.OrderDate).First().OrderDate
-                        });
-            return customersWithOrderDate.OrderBy(x => x.StartDateTime)
-                    .ThenByDescending(x => x.Customer.Orders.Count())
-                    .ThenBy(x => x.Customer.CompanyName)
-                    .ToList();
-        }
-
+        [Category(CategoryName)]
+        [Title("Task 9 - 1")]
+        [Description("Calculates average profitability foreach city.")]
         public List<AverageProfitability> GetAverageProfitability()
         {
-            return _dataSource.Customers.GroupBy(x => x.City).Select(x => new AverageProfitability(x.Key, x.Average(xx => xx.Orders.Sum(xxx => xxx.Total)))).ToList();
+            var profitabilities = _dataSource.Customers.GroupBy(x => x.City).Select(x => new AverageProfitability(x.Key, x.Average(xx => xx.Orders.Sum(xxx => xxx.Total)))).ToList();
+
+            foreach (var profitability in profitabilities) ObjectDumper.Write(profitability);
+
+            return profitabilities;
         }
 
+        [Category(CategoryName)]
+        [Title("Task 9 - 2")]
+        [Description("Calculates average intensity foreach city.")]
         public List<AverageIntensity> GetAverageIntensity()
         {
-            return _dataSource.Customers.GroupBy(x => x.City).Select(x => new AverageIntensity(x.Key, x.Average(xx => xx.Orders.Count()))).ToList();
+            var intensities = _dataSource.Customers.GroupBy(x => x.City).Select(x => new AverageIntensity(x.Key, x.Average(xx => xx.Orders.Count()))).ToList();
+
+            foreach (var intensity in intensities) ObjectDumper.Write(intensity);
+
+            return intensities;
         }
     }
 }

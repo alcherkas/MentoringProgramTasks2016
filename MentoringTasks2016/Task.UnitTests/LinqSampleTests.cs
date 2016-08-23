@@ -14,9 +14,9 @@ namespace Task.UnitTests
         {
             var source = DataSourceFactory.Create();
             var samples = new LinqSamples(source);
-            var moreThanValue = 400;
+            var moreThanValue = 500;
 
-            var result = samples.GetCustomersWithOrderSumMoreThan(moreThanValue);
+            var result = samples.GetCustomersWithOrderSumMoreThan();
 
             Assert.True(result.All(x => x.Orders.Sum(xx => xx.Total) > moreThanValue));
         }
@@ -28,7 +28,7 @@ namespace Task.UnitTests
             var samples = new LinqSamples(source);
             var moreThanValue = 100;
 
-            var result = samples.GetCustomersWithAnyOrderMoreThan(moreThanValue);
+            var result = samples.GetCustomersWithAnyOrderMoreThan();
 
             Assert.True(result.All(x => x.Orders.Any(xx => xx.Total > moreThanValue)));
         }

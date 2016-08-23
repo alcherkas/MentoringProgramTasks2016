@@ -80,7 +80,7 @@ namespace SampleSupport
                 }
 
                 StringBuilder methodCode = new StringBuilder();
-                methodCode.Append(getCodeBlock(allCode, "void " + method.Name));
+                methodCode.Append(getCodeBlock(allCode, $"{method.ReturnType} {method.Name}"));
                 
                 foreach (MethodInfo lm in linkedMethods)
                 {
