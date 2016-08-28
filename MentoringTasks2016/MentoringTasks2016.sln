@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KittyLikeability", "KittyLikeability\KittyLikeability.csproj", "{0823A89F-508D-48B5-B84C-F22ACB5332E2}"
 EndProject
@@ -14,6 +14,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BCL4", "BCL4\BCL4.csproj", "{4570719E-4D10-45CD-BC0A-E81C42B781A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileLoader", "FileLoader\FileLoader.csproj", "{6B021C88-3BA2-49D1-BD47-CACEA1DC656E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task", "Task\Task.csproj", "{C770ED8F-6F5E-4DED-92C6-D5FE544DE764}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LinqTasks", "LinqTasks", "{7CD0B0C1-24B1-4DBA-9D6F-B4527F131E62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task.UnitTests", "Task.UnitTests\Task.UnitTests.csproj", "{722CB97C-4350-419B-BB41-8354BB5BBC4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,8 +51,20 @@ Global
 		{6B021C88-3BA2-49D1-BD47-CACEA1DC656E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B021C88-3BA2-49D1-BD47-CACEA1DC656E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B021C88-3BA2-49D1-BD47-CACEA1DC656E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C770ED8F-6F5E-4DED-92C6-D5FE544DE764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C770ED8F-6F5E-4DED-92C6-D5FE544DE764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C770ED8F-6F5E-4DED-92C6-D5FE544DE764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C770ED8F-6F5E-4DED-92C6-D5FE544DE764}.Release|Any CPU.Build.0 = Release|Any CPU
+		{722CB97C-4350-419B-BB41-8354BB5BBC4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{722CB97C-4350-419B-BB41-8354BB5BBC4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{722CB97C-4350-419B-BB41-8354BB5BBC4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{722CB97C-4350-419B-BB41-8354BB5BBC4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C770ED8F-6F5E-4DED-92C6-D5FE544DE764} = {7CD0B0C1-24B1-4DBA-9D6F-B4527F131E62}
+		{722CB97C-4350-419B-BB41-8354BB5BBC4B} = {7CD0B0C1-24B1-4DBA-9D6F-B4527F131E62}
 	EndGlobalSection
 EndGlobal
