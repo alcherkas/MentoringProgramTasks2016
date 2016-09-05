@@ -1,0 +1,1 @@
+﻿select sum((1 - Discount) * UnitPrice * Quantity) as 'Totals' from [Order Details]
