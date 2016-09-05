@@ -62,9 +62,18 @@
     <Folder Include="Part1\FiltersAdvanced" />
     <Folder Include="Part1\FiltersBetween" />
     <Folder Include="Part1\FiltersLike" />
+    <Folder Include="Part2" />
+    <Folder Include="Part2\SumCount" />
+    <Folder Include="Part2\GroupByHaving" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Part1\Filters\GetLatestNonShippedOrders.sql" />
+    <None Include="Part2\SumCount\Task1.sql" />
+    <None Include="Part2\SumCount\Task2.sql" />
+    <None Include="Part2\SumCount\Task3.sql" />
+    <None Include="Part2\GroupByHaving\Task1.sql" />
+    <None Include="Part2\GroupByHaving\Task2.sql" />
+    <None Include="Part2\GroupByHaving\Task3.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Part1\Filters\GetLatestOrders.sql" />
