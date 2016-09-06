@@ -67,6 +67,7 @@
     <Folder Include="Part2\GroupByHaving" />
     <Folder Include="Part2\Joins" />
     <Folder Include="Part2\NestedSelects" />
+    <Folder Include="Part3" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Part1\Filters\GetLatestNonShippedOrders.sql" />
@@ -111,5 +112,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Part1\FiltersLike\GetLikeChocolate.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Part3\v11.sql" />
+    <Build Include="Part3\v13.sql" />
   </ItemGroup>
 </Project>
