@@ -97,6 +97,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <SqlTargetName>Northwind</SqlTargetName>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
@@ -264,16 +265,16 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <None Include="PostDeployment\InsertCategories.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="PostDeployment\InsertSuppliers.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="PostDeployment\InsertProducts.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>DoNotCopy</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="PostDeployment\Script.PostDeployment.sql" />
+    <PostDeploy Include="PostDeployment\Script.PostDeployment.sql">
+      <CopyToOutputDirectory>DoNotCopy</CopyToOutputDirectory>
+    </PostDeploy>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PostDeployment\InsertSuppliers.sql" />
+    <None Include="PostDeployment\InsertProducts.sql" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,4 @@
-﻿DELETE FROM [Northwind].[Categories];
-DELETE FROM [Northwind].[Suppliers];
-DELETE FROM [Northwind].[Products];
+﻿DELETE FROM [Categories];
+DELETE FROM [Suppliers];
+DELETE FROM [Products];
 :r .\InsertCategories.sql
-:r .\InsertSuppliers.sql
-:r .\InsertProducts.sql

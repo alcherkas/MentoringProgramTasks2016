@@ -114,7 +114,11 @@
     <None Include="Part1\FiltersLike\GetLikeChocolate.sql" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Part3\v11.sql" />
-    <Build Include="Part3\v13.sql" />
+    <None Include="Part3\v11.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Part3\v13.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
