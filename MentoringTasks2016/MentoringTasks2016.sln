@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KittyLikeability", "KittyLikeability\KittyLikeability.csproj", "{0823A89F-508D-48B5-B84C-F22ACB5332E2}"
 EndProject
@@ -32,6 +32,8 @@ EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Sql.Data", "Sql.Data\Sql.Data.sqlproj", "{8EB0AC8F-2107-43F1-9954-4EA7E827C57C}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Northwind", "Northwind\Northwind.sqlproj", "{8EAD86AE-81E4-495B-B07A-CC3741F05459}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Northwind.Data", "Northwind.Data\Northwind.Data.csproj", "{94B97233-C6FB-457E-8D9E-CB9200B247E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,10 @@ Global
 		{8EAD86AE-81E4-495B-B07A-CC3741F05459}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EAD86AE-81E4-495B-B07A-CC3741F05459}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8EAD86AE-81E4-495B-B07A-CC3741F05459}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{94B97233-C6FB-457E-8D9E-CB9200B247E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94B97233-C6FB-457E-8D9E-CB9200B247E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94B97233-C6FB-457E-8D9E-CB9200B247E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94B97233-C6FB-457E-8D9E-CB9200B247E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,5 +108,6 @@ Global
 		{C3BE34D1-EE91-4ECB-878C-6F21B93FE5C1} = {38D00DB8-E217-4746-BAD1-16121EEDC4E0}
 		{8EB0AC8F-2107-43F1-9954-4EA7E827C57C} = {2BEFB5D7-7067-45D2-8189-F8F99375FE01}
 		{8EAD86AE-81E4-495B-B07A-CC3741F05459} = {2BEFB5D7-7067-45D2-8189-F8F99375FE01}
+		{94B97233-C6FB-457E-8D9E-CB9200B247E6} = {2BEFB5D7-7067-45D2-8189-F8F99375FE01}
 	EndGlobalSection
 EndGlobal
