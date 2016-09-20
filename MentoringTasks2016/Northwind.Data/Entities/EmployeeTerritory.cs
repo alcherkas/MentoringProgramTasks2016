@@ -1,14 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using LinqToDB.Mapping;
 
-namespace Northwind.Data.Entities
+namespace DataModels
 {
-    [Table("EmployeeTerritories")]
-    public sealed class EmployeeTerritory
+    [Table(Schema = "dbo", Name = "EmployeeTerritories")]
+    public partial class EmployeeTerritory
     {
-        [Column("EmployeeID")]
-        public int EmpoyeeId { get; set; }
+        [PrimaryKey(1), NotNull]
+        public int EmployeeID { get; set; } // int
+        [PrimaryKey(2), NotNull]
+        public string TerritoryID { get; set; } // nvarchar(20)
 
-        [Column("TerritoryID")]
-        public string TerritoryId { get; set; }
+        #region Associations
+
+        /// <summary>
+        /// FK_EmployeeTerritories_Employees
+        /// </summary>
+        [Association(ThisKey = "EmployeeID", OtherKey = "EmployeeID", CanBeNull = false, KeyName = "FK_EmployeeTerritories_Employees", BackReferenceName = "EmployeeTerritories")]
+        public Employee Employee { get; set; }
+
+        /// <summary>
+        /// FK_EmployeeTerritories_Territories
+        /// </summary>
+        [Association(ThisKey = "TerritoryID", OtherKey = "TerritoryID", CanBeNull = false, KeyName = "FK_EmployeeTerritories_Territories", BackReferenceName = "EmployeeTerritories")]
+        public Territory Territory { get; set; }
+
+        #endregion
     }
 }

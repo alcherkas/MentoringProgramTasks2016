@@ -1,23 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
+using LinqToDB.Mapping;
 
-namespace Northwind.Data.Entities
+namespace DataModels
 {
-    [Table("Categories")]
-    public sealed class Category
+    [Table(Schema = "dbo", Name = "Categories")]
+    public partial class Category
     {
-        [Key]
-        [Column("CategoryID")]
-        public int Id { get; set; }
+        [PrimaryKey, Identity]
+        public int CategoryID { get; set; } // int
+        [Column, NotNull]
+        public string CategoryName { get; set; } // nvarchar(15)
+        [Column, Nullable]
+        public string Description { get; set; } // ntext
+        [Column, Nullable]
+        public byte[] Picture { get; set; } // image
 
-        [MaxLength(15)]
-        [Column("CategoryName")]
-        public string Name { get; set; }
+        #region Associations
 
-        [Column("Description")]
-        public string Description { get; set; }
+        /// <summary>
+        /// FK_Products_Categories_BackReference
+        /// </summary>
+        [Association(ThisKey = "CategoryID", OtherKey = "CategoryID", CanBeNull = true, IsBackReference = true)]
+        public IEnumerable<Product> Products { get; set; }
 
-        [Column("Picture")]
-        public byte[] Picture { get; set; }
+        #endregion
     }
 }
