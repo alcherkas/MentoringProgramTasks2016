@@ -1,13 +1,13 @@
 using LinqToDB.Mapping;
 
-namespace DataModels
+namespace Northwind.Data.Entities
 {
     [Table(Schema = "dbo", Name = "Order Details")]
-    public partial class OrderDetail
+    public class OrderDetail
     {
         [PrimaryKey(1), NotNull]
         public int OrderID { get; set; } // int
-        [PrimaryKey(2), NotNull]
+        [Column, NotNull]
         public int ProductID { get; set; } // int
         [Column, NotNull]
         public decimal UnitPrice { get; set; } // money

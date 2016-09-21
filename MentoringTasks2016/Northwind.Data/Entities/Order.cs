@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using LinqToDB.Mapping;
 
-namespace DataModels
+namespace Northwind.Data.Entities
 {
     [Table(Schema = "dbo", Name = "Orders")]
-    public partial class Order
+    public class Order
     {
         [PrimaryKey, Identity]
         public int OrderID { get; set; } // int

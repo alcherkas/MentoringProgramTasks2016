@@ -1,10 +1,10 @@
 using System;
 using LinqToDB.Mapping;
 
-namespace DataModels
+namespace Northwind.Data.Entities
 {
     [Table(Schema = "dbo", Name = "Invoices")]
-    public partial class Invoice
+    public class Invoice
     {
         [Column, Nullable]
         public string ShipName { get; set; } // nvarchar(40)

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DataModels;
 using LinqToDB;
+using Northwind.Data.Entities;
 
 namespace Northwind.Data.Examples
 {
@@ -144,7 +144,7 @@ namespace Northwind.Data.Examples
         {
             using (var db = new NorthwindDB())
             {
-                var products = db.Products.Where(p => p.CategoryID == 3).ToList();
+                var products = db.Products.Where(p => p.CategoryID == 4).ToList();
                 var newCategoryId = db.Categories.First().CategoryID;
 
                 foreach (var product in products)
@@ -203,17 +203,21 @@ namespace Northwind.Data.Examples
         {
             using (var db = new NorthwindDB())
             {
-                db.BeginTransaction();
                 var orderDetails = db.OrderDetails.Where(x => x.OrderDetailsOrder.ShippedDate == null).ToList();
-                var product = db.Products.First();
+                var product = db.Products.OrderByDescending(x => x.ProductID).First();
+
                 foreach (var orderDetail in orderDetails)
                 {
                     orderDetail.ProductID = product.ProductID;
+                    orderDetail.OrderDetailsProduct = product;
+
                     db.Update(orderDetail);
                 }
-                db.CommitTransaction();
-                var ordersWithNewProducts = db.OrderDetails.Where(x => x.OrderDetailsOrder.ShippedDate == null).ToList();
-                Assert.IsTrue(ordersWithNewProducts.All(x => x.ProductID == product.ProductID));
+
+                var isExistAnyNonShippedOrderWithOldProduct = db.OrderDetails.Where(x => x.OrderDetailsOrder.ShippedDate == null)
+                                                                             .Any(x => x.ProductID != product.ProductID);
+
+                Assert.IsFalse(isExistAnyNonShippedOrderWithOldProduct);
             }
         }
     }

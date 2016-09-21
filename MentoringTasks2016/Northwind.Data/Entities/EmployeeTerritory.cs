@@ -1,9 +1,9 @@
 using LinqToDB.Mapping;
 
-namespace DataModels
+namespace Northwind.Data.Entities
 {
     [Table(Schema = "dbo", Name = "EmployeeTerritories")]
-    public partial class EmployeeTerritory
+    public class EmployeeTerritory
     {
         [PrimaryKey(1), NotNull]
         public int EmployeeID { get; set; } // int
