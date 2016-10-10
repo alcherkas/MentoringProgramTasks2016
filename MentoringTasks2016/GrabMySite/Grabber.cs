@@ -2,63 +2,92 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace GrabMySite
 {
+    public enum GrabbingWidth
+    {
+        Unlimited,
+        Domain,
+        UnderLink
+    }
+
     public class Grabber
     {
-        private readonly string _sourceUrl;
+        private const string LongPathPrefix = @"";
+        private readonly IProgress<string> _progress;
+        private readonly string _path;
+        private readonly GrabbingWidth _grabbingWidth;
+        private readonly string _url;
 
-        public Grabber(string sourceUrl)
+        private string _root;
+        private string _extensionsRegex;
+
+        public Grabber(string url, string path, GrabbingWidth grabbingWidth, IProgress<string> progress)
         {
-            _sourceUrl = sourceUrl;
+            _url = url;
+            _path = path;
+            _grabbingWidth = grabbingWidth;
+            Extensions = "*";
+            Depth = null;
+            _progress = progress;
         }
 
-        public async Task Grab()
+        public string Extensions { set; get; }
+
+        public int? Depth { set; get; }
+
+        public void Grab()
         {
-            var client = new WebClient();
-            await Grab(client, _sourceUrl, 0, 1);
-        }
+            var url = new Uri(_url);
+            _extensionsRegex = $@"^.*\.({Extensions.Replace(",", "|").Replace("*", ".*")})$";
 
-        private async Task Grab(WebClient client, string address, int currentDepth, int allowedDepth)
-        {
-            if (!IsAddressExists(address)) return;
+            PrepareDirectory(url);
 
-            string html = client.DownloadString(address);
-
-
-            var htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(html);
-
-            var parentUrl = GetParentUrl(address);
-            await Task.Run(() => WriteContentToFile(address, html, parentUrl));
-
-            foreach (HtmlNode item in htmlDocument.DocumentNode.SelectNodes("//a[@href" + "]"))
+            using (HttpClient client = new HttpClient())
             {
-                var attributeValue = item.GetAttributeValue("href", string.Empty);
-                var nextUrl = parentUrl + attributeValue;
-
-                if (currentDepth <= allowedDepth)
-                {
-                    await Task.Run(() => Grab(client, nextUrl, currentDepth + 1, allowedDepth));
-                }
+                GrabPage(client, url);
+                _progress.Report("Done");
             }
         }
 
-        private static void WriteContentToFile(string address, string html, string parentUrl)
+        private void GrabPage(HttpClient client, Uri url, int deep = 0)
         {
-            var fileName = GetFileName(address, parentUrl);
+            _progress.Report("Page processing: " + url);
+            if (!IsAddressExists(url.OriginalString)) return;
 
-            var path = GetFolderPath(parentUrl);
+            using (HttpResponseMessage response = client.GetAsync(url).Result)
+            using (HttpContent content = response.Content)
+            {
+                string result = content.ReadAsStringAsync().Result;
+                if (result != null)
+                {
+                    var fileName = GetFileName(url);
+                    HtmlDocument hap = new HtmlDocument();
+                    hap.LoadHtml(result);
 
-            var filePath = Path.Combine(path, fileName);
+                    DownloadResources(hap);
+                    IEnumerable<Uri> links = new List<Uri>();
+                    if (Depth.HasValue && Depth > deep)
+                    {
+                        links = ProcessLinks(hap);
+                    }
 
-            Directory.CreateDirectory(path);
-            File.WriteAllText(filePath, html);
+                    SavePage(fileName, hap.DocumentNode.OuterHtml);
+
+                    foreach (var link in links)
+                    {
+                        fileName = GetFileName(link);
+                        if (!File.Exists(fileName))
+                        {
+                            GrabPage(client, link, ++deep);
+                        }
+                    }
+                }
+            }
         }
 
         private readonly Dictionary<string, bool> _verifiedAddresses = new Dictionary<string, bool>();
@@ -79,47 +108,186 @@ namespace GrabMySite
         {
             try
             {
-                //Creating the HttpWebRequest
                 HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-                //Setting the Request method HEAD, you can also use GET too.
+
+                if (request == null) return false;
+
                 request.Method = "HEAD";
-                //Getting the Web Response.
                 HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-                //Returns TRUE if the Status code == 200
-                response.Close();
-                return (response.StatusCode == HttpStatusCode.OK);
+                response?.Close();
+                return (response?.StatusCode == HttpStatusCode.OK);
             }
             catch
             {
-                //Any exception will returns false.
                 return false;
             }
         }
 
-        private static string GetFolderPath(string parentUrl)
+        private void SavePage(string fileName, string page)
         {
-            var startIndex = parentUrl.IndexOf("//");
-            var startIndexToCopy = parentUrl.IndexOf('/', startIndex + 2) + 1;
-            char[] folders = new char[parentUrl.Length - startIndexToCopy];
-            parentUrl.CopyTo(startIndexToCopy, folders, 0, folders.Length);
-            var foldersString = new string(folders);
-
-            var path = Path.Combine(Environment.CurrentDirectory, foldersString);
-
-            return path;
+            try
+            {
+                fileName = Regex.Replace(fileName, @"(.asp)$", ".html");
+                FileInfo file = new FileInfo(fileName);
+                file.Directory?.Create();
+                File.WriteAllText(fileName, page);
+            }
+            catch (Exception e)
+            {
+                _progress.Report(e.Message);
+            }
         }
 
-        private static string GetFileName(string url, string parentUrl)
+        private void PrepareDirectory(Uri url)
         {
-            return url.Replace(parentUrl, string.Empty).Replace("/", string.Empty);
+            var directoryName = url.Host + url.LocalPath.Replace('/', '\\');
+            var fullDirectoryName = Path.Combine(_path, directoryName);
+            if (Directory.Exists(fullDirectoryName))
+            {
+                Directory.Delete(fullDirectoryName, true);
+            }
+
+            Directory.CreateDirectory(fullDirectoryName);
+            _root = fullDirectoryName;
         }
 
-        private static string GetParentUrl(string url)
+        private string GetFileName(Uri url)
         {
-            int lastIndex = url.LastIndexOf('/');
-            var parentUrl = new char[lastIndex];
-            url.CopyTo(0, parentUrl, 0, lastIndex);
-            return new string(parentUrl);
+            string fileName;
+            if (url.IsAbsoluteUri)
+            {
+                fileName = url.LocalPath.Trim("/".ToCharArray()).Replace('/', '\\');
+                fileName = (string.IsNullOrEmpty(fileName) ? "index" : fileName) + url.Query.Replace('?', '!');
+            }
+            else
+            {
+                fileName = url.OriginalString.Trim("/".ToCharArray()).Replace('/', '\\');
+            }
+
+            fileName = Regex.Replace(fileName, @"[#].*$", "");
+
+            if (!Regex.IsMatch(fileName, @"[.]\w+$"))
+            {
+                fileName = (string.IsNullOrEmpty(fileName) ? "index" : fileName) + ".html";
+            }
+
+            return LongPathPrefix + Path.Combine(_root, fileName);
+        }
+
+
+        private IEnumerable<Uri> ProcessLinks(HtmlDocument document)
+        {
+            HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("//a");
+            var result = new List<Uri>();
+            if (nodes != null)
+            {
+                foreach (var htmlNode in nodes)
+                {
+                    var link = htmlNode.GetAttributeValue("href", null);
+                    Uri url;
+                    if (!string.IsNullOrEmpty(link) && !link.StartsWith("http"))
+                    {
+                        var rootUrl = new Uri(_url);
+                        if (link.StartsWith(@"/"))
+                        {
+                            link = rootUrl.Scheme + "://" + rootUrl.Host + link;
+                        }
+                    }
+                    if (Uri.TryCreate(link, UriKind.Absolute, out url))
+                    {
+                        if (!CheckLinkWidth(url))
+                        {
+                            continue;
+                        }
+                        var newLink = GetFileName(url);
+
+                        newLink = Regex.Replace(newLink, @"(.asp)$", ".html");
+
+                        htmlNode.SetAttributeValue("href", "file:///" + newLink);
+                        result.Add(url);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private bool CheckLinkWidth(Uri link)
+        {
+            switch (_grabbingWidth)
+            {
+                case GrabbingWidth.Domain:
+                    var rootUrl = new Uri(_url);
+                    return link.Host.Equals(rootUrl.Host);
+                case GrabbingWidth.UnderLink:
+                    return link.AbsolutePath.StartsWith(_url);
+                default:
+                    return true;
+            }
+        }
+
+        private void DownloadResources(HtmlDocument document)
+        {
+            HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("//img");
+
+            _progress.Report("\tResources downloading...");
+            if (nodes != null)
+            {
+                using (var client = new WebClient())
+                {
+                    foreach (var htmlNode in nodes)
+                    {
+                        DownloadResource(htmlNode, client, "src");
+                    }
+                }
+            }
+
+            var links = document.DocumentNode.SelectNodes("//link");
+            if (links != null)
+            {
+                using (var client = new WebClient())
+                {
+                    foreach (var htmlNode in links)
+                    {
+                        DownloadResource(htmlNode, client, "href");
+                    }
+                }
+            }
+
+        }
+
+        private void DownloadResource(HtmlNode htmlNode, WebClient client, string attributeName)
+        {
+            var link = htmlNode.GetAttributeValue(attributeName, null);
+            Uri url;
+            if (Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out url))
+            {
+                if (!Regex.IsMatch(link, _extensionsRegex))
+                {
+                    return;
+                }
+
+                var newLink = GetFileName(url);
+
+                if (link.StartsWith("/"))
+                    link = _url.TrimEnd('/') + link;
+                try
+                {
+                    FileInfo file = new FileInfo(newLink);
+                    file.Directory?.Create();
+                    if (!File.Exists(newLink))
+                    {
+                        _progress.Report(link);
+                        client.DownloadFile(link, newLink);
+                    }
+
+                    htmlNode.SetAttributeValue(attributeName, "file:///" + newLink);
+                }
+                catch (Exception e)
+                {
+                    _progress.Report(e.Message);
+                }
+            }
         }
     }
 }

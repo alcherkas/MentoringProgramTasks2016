@@ -1,12 +1,4 @@
-﻿using GrabMySite;
-using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace GrabMySite.Client
 {
@@ -14,11 +6,24 @@ namespace GrabMySite.Client
     {
         static void Main(string[] args)
         {
-            var address = "http://www.w3schools.com/xsl/xpath_syntax.asp";
-            var grabber = new Grabber(address);
-            Task.WaitAny(grabber.Grab());
+            var address = "http://www.w3schools.com/";
+            var path = @"D:\1";
+            var isTrasingEnabled = true;
+
+            IProgress<string> progress = isTrasingEnabled ? (IProgress<string>) new ConsoleProgressReporter<string>() : new  NullProgressReporter<string>();
+
+            var grabber = new Grabber(address, path, GrabbingWidth.Unlimited, progress) {Depth = 1};
+            grabber.Grab();
         }
 
+        public sealed class ConsoleProgressReporter<T> : IProgress<T>
+        {
+            public void Report(T value) => Console.WriteLine(value);
+        }
 
+        public sealed class NullProgressReporter<T> : IProgress<T>
+        {
+            public void Report(T value) { }
+        }
     }
 }
