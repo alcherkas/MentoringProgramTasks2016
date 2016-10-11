@@ -1,0 +1,6 @@
+time,message,logger,level
+2016-10-11 21:05:36.8200,Performing log in,MvcMusicStore.Controllers.AccountController,Info
+2016-10-11 21:05:36.8311,Calling  UserManager FindAsync,MvcMusicStore.Controllers.AccountController,Debug
+2016-10-11 21:05:36.8732,Calling SignInAsync,MvcMusicStore.Controllers.AccountController,Debug
+2016-10-11 21:05:36.9292,Calling RedirectToLocal,MvcMusicStore.Controllers.AccountController,Debug
+2016-10-11 21:05:36.9292,Calling RedirectToLocal,MvcMusicStore.Controllers.AccountController,Error
