@@ -1,8 +1,8 @@
 namespace NorthwindLibrary
 {
-	using System.Data.Entity;
+    using System.Data.Entity;
 
-	public partial class Northwind : DbContext
+    public partial class Northwind : DbContext
 	{
 		public Northwind()
 			: base("name=Northwind")

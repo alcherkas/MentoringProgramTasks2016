@@ -1,15 +1,11 @@
-﻿using NorthwindLibrary;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CachingSolutionsSamples
 {
-	public interface ICategoriesCache
-	{
-		IEnumerable<Category> Get(string forUser);
-		void Set(string forUser, IEnumerable<Category> categories);
-	}
+    public interface ICache<T>
+        where T : class
+    {
+        IEnumerable<T> Get(string forUser);
+        void Set(string forUser, IEnumerable<T> categories);
+    }
 }

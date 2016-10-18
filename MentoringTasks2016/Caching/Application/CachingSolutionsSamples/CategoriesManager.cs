@@ -2,42 +2,50 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace CachingSolutionsSamples
 {
-	public class CategoriesManager
-	{
-		private ICategoriesCache cache;
+    public class CategoriesManager<T>
+        where T: class 
+    {
+        private ICache<T> cache;
 
-		public CategoriesManager(ICategoriesCache cache)
-		{
-			this.cache = cache;
-		}
+        public CategoriesManager(ICache<T> cache)
+        {
+            this.cache = cache;
+        }
 
-		public IEnumerable<Category> GetCategories()
-		{
-			Console.WriteLine("Get Categories");
+        public string CurrentUser => Thread.CurrentPrincipal.Identity.Name;
 
-			var user = Thread.CurrentPrincipal.Identity.Name;
-			var categories = cache.Get(user);
+        public IEnumerable<T> GetCategories()
+        {
+            Console.WriteLine("Get " + typeof(T));
 
-			if (categories == null)
-			{
-				Console.WriteLine("From DB");
+            var user = CurrentUser;
+            var list = cache.Get(user);
 
-				using (var dbContext = new Northwind())
-				{
-					dbContext.Configuration.LazyLoadingEnabled = false;
-					dbContext.Configuration.ProxyCreationEnabled = false;
-					categories = dbContext.Categories.ToList();
-					cache.Set(user, categories);
-				}
-			}
+            if (list == null)
+            {
+                Console.WriteLine("From DB");
 
-			return categories;
-		}
-	}
+                list = PutEntitiesToCache(user);
+            }
+
+            return list;
+        }
+
+        private IEnumerable<T> PutEntitiesToCache(string user)
+        {
+            List<T> list;
+            using (var dbContext = new Northwind())
+            {
+                dbContext.Configuration.LazyLoadingEnabled = false;
+                dbContext.Configuration.ProxyCreationEnabled = false;
+                list = dbContext.Set<T>().ToList();
+                cache.Set(user, list);
+            }
+            return list;
+        }
+    }
 }
